@@ -66,7 +66,7 @@ Error responses use this JSON shape:
 
 | Status | Meaning |
 | --- | --- |
-| `400` | The request body is not valid JSON, or a required text/message value is empty. |
+| `400` | The request body is not valid JSON or a JSON object, a required text/message value is empty, or a field has an invalid type. |
 | `404` | The requested text-tool endpoint does not exist. |
 | `502` | Ollama responded with an error or returned invalid JSON for an extraction request. |
 | `503` | The application could not connect to the Ollama service. |

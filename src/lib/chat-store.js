@@ -34,13 +34,27 @@ function getSession(sessionId) {
   return { id: sessionId, messages: sessions.get(sessionId) };
 }
 
-export async function sendChatMessage({ sessionId, message }) {
+function getChatInput(body) {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    throw new ApiError("The request body must be a JSON object", 400);
+  }
+
+  const { sessionId, message } = body;
+  if (sessionId !== undefined && typeof sessionId !== "string") {
+    throw new ApiError("The sessionId field must be a string", 400);
+  }
+
   if (typeof message !== "string" || !message.trim()) {
     throw new ApiError("The request must include a non-empty message field", 400);
   }
 
+  return { sessionId, message: message.trim() };
+}
+
+export async function sendChatMessage(body) {
+  const { sessionId, message } = getChatInput(body);
   const session = getSession(sessionId);
-  session.messages.push({ role: "user", content: message.trim() });
+  session.messages.push({ role: "user", content: message });
 
   const messagesForModel = [
     session.messages[0],
@@ -58,13 +72,10 @@ export async function sendChatMessage({ sessionId, message }) {
   return { sessionId: session.id, reply };
 }
 
-export async function streamChatMessage({ sessionId, message }) {
-  if (typeof message !== "string" || !message.trim()) {
-    throw new ApiError("The request must include a non-empty message field", 400);
-  }
-
+export async function streamChatMessage(body) {
+  const { sessionId, message } = getChatInput(body);
   const session = getSession(sessionId);
-  session.messages.push({ role: "user", content: message.trim() });
+  session.messages.push({ role: "user", content: message });
 
   const messagesForModel = [
     session.messages[0],
