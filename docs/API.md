@@ -58,4 +58,18 @@ Classification may include a comma-separated `categories` field:
 
 ## Errors
 
-Invalid input or an unavailable Ollama service produces a non-success HTTP response with a JSON error message. Clients should check `response.ok` before using a response.
+Error responses use this JSON shape:
+
+```json
+{ "error": "A human-readable explanation" }
+```
+
+| Status | Meaning |
+| --- | --- |
+| `400` | The request body is not valid JSON, or a required text/message value is empty. |
+| `404` | The requested text-tool endpoint does not exist. |
+| `502` | Ollama responded with an error or returned invalid JSON for an extraction request. |
+| `503` | The application could not connect to the Ollama service. |
+| `500` | An unexpected server error occurred. |
+
+Clients should check `response.ok` before using a response.

@@ -1,4 +1,5 @@
 import { generateText } from "./ollama.js";
+import { ApiError } from "./api-error.js";
 
 const operations = {
   summarize: {
@@ -17,7 +18,7 @@ const operations = {
 
 export async function runTextTool(operation, body) {
   if (typeof body.text !== "string" || !body.text.trim()) {
-    throw new Error("The request must include a non-empty text field");
+    throw new ApiError("The request must include a non-empty text field", 400);
   }
 
   if (operation === "extract") {
@@ -30,7 +31,7 @@ export async function runTextTool(operation, body) {
     try {
       return { data: JSON.parse(result) };
     } catch {
-      throw new Error("The model did not return valid JSON");
+      throw new ApiError("The model did not return valid JSON", 502);
     }
   }
 
@@ -44,7 +45,7 @@ export async function runTextTool(operation, body) {
   }
 
   const selectedOperation = operations[operation];
-  if (!selectedOperation) throw new Error("Endpoint not found");
+  if (!selectedOperation) throw new ApiError("Endpoint not found", 404);
 
   const result = await generateText(selectedOperation.instruction, body.text);
   return { [selectedOperation.key]: result };
