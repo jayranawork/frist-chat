@@ -206,12 +206,3 @@ Ollama / Llama 3.2
 JSON response
 ```
 
-## Current limitations
-
-- Chat sessions are stored only in server memory.
-- Restarting the Next.js server clears chat sessions.
-- There is no authentication or user account system.
-- There is no database persistence.
-- The model has no live web access, so it can still be wrong about recent events or public figures.
-
-For a larger deployment, the next improvements would be persistent conversations, authentication, rate limiting, and structured logging.
