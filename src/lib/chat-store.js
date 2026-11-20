@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { generateChat, streamChat } from "./ollama.js";
+import { ApiError } from "./api-error.js";
 
 const sessions = new Map();
 const maxHistoryMessages = 12;
@@ -35,7 +36,7 @@ function getSession(sessionId) {
 
 export async function sendChatMessage({ sessionId, message }) {
   if (typeof message !== "string" || !message.trim()) {
-    throw new Error("The request must include a non-empty message field");
+    throw new ApiError("The request must include a non-empty message field", 400);
   }
 
   const session = getSession(sessionId);
@@ -59,7 +60,7 @@ export async function sendChatMessage({ sessionId, message }) {
 
 export async function streamChatMessage({ sessionId, message }) {
   if (typeof message !== "string" || !message.trim()) {
-    throw new Error("The request must include a non-empty message field");
+    throw new ApiError("The request must include a non-empty message field", 400);
   }
 
   const session = getSession(sessionId);

@@ -1,13 +1,21 @@
 import { NextResponse } from "next/server";
 import { runTextTool } from "@/lib/text-tools";
+import { ApiError, errorResponse } from "@/lib/api-error";
 
 export async function POST(request, { params }) {
   try {
     const routeParams = await params;
-    const result = await runTextTool(routeParams.operation, await request.json());
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      throw new ApiError("The request body must be valid JSON", 400);
+    }
+
+    const result = await runTextTool(routeParams.operation, body);
     return NextResponse.json(result);
   } catch (error) {
-    const status = error.message === "Endpoint not found" ? 404 : 500;
-    return NextResponse.json({ error: error.message }, { status });
+    const { message, status } = errorResponse(error);
+    return NextResponse.json({ error: message }, { status });
   }
 }
