@@ -17,6 +17,10 @@ const operations = {
 };
 
 export async function runTextTool(operation, body) {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    throw new ApiError("The request body must be a JSON object", 400);
+  }
+
   if (typeof body.text !== "string" || !body.text.trim()) {
     throw new ApiError("The request must include a non-empty text field", 400);
   }
@@ -36,7 +40,11 @@ export async function runTextTool(operation, body) {
   }
 
   if (operation === "classify") {
-    const categories = body.categories || "positive, negative, neutral";
+    if (body.categories !== undefined && (typeof body.categories !== "string" || !body.categories.trim())) {
+      throw new ApiError("Categories must be a non-empty comma-separated string", 400);
+    }
+
+    const categories = body.categories?.trim() || "positive, negative, neutral";
     const category = await generateText(
       `Classify the user's text into one of these categories: ${categories}. Return only the category name.`,
       body.text,
